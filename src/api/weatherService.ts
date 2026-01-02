@@ -1,8 +1,11 @@
 import { API_KEY } from '../config/aemet';
 import { fetchWithRetry } from './httpClient';
 
-const IS_PROD = import.meta.env.PROD;
-const BASE_URL = IS_PROD ? "https://opendata.aemet.es/opendata/api" : "/opendata/api";
+// Use absolute URL in production (not localhost), relative proxy in development
+const isLocal = typeof window !== 'undefined' && 
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+const BASE_URL = isLocal ? "/opendata/api" : "https://opendata.aemet.es/opendata/api";
 
 interface AemetResponse {
   descripcion: string;
@@ -31,6 +34,6 @@ export const getAemetData = async <T>(endpoint: string): Promise<T> => {
   
   // Step 2: Download final JSON from the provided URL
   // Hit direct URL in production, proxy only in dev
-  const finalUrl = IS_PROD ? result.datos : result.datos.replace("https://opendata.aemet.es", "");
+  const finalUrl = !isLocal ? result.datos : result.datos.replace("https://opendata.aemet.es", "");
   return await fetchWithRetry<T>(finalUrl);
 };
