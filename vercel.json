@@ -1,8 +1,0 @@
-{
-  "rewrites": [
-    {
-      "source": "/opendata/:path*",
-      "destination": "https://opendata.aemet.es/opendata/:path*"
-    }
-  ]
-}
